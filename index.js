@@ -59,7 +59,7 @@ app.post("/api/send-mail", (req, res) => {
 });
 
 app.get("/api/test-mail", (req, res) => {
-	const emails = ["bhadrinathrao688@gmail.com"];
+	const emails = [""];
 	const cc = mailCc;
 	const subject = "[TEST] Test Email from " + siteName;
 
