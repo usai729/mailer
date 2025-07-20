@@ -18,11 +18,13 @@ app.get("/", (req, res) => {
 	res.send("Hello");
 });
 
-app.post("/api/send-mail", async (req, res) => {
+app.post("/api/send-mail", (req, res) => {
 	const { emails, message, subject } = req.body;
 
 	if (!emails || !Array.isArray(emails) || emails.length <= 0) {
-		return res.status(400).json({ success: false, message: "Emails are required" });
+		return res
+			.status(400)
+			.json({ success: false, message: "Emails are required" });
 	}
 
 	if (!message || !subject || message.length <= 0 || subject.length <= 0) {
@@ -32,37 +34,28 @@ app.post("/api/send-mail", async (req, res) => {
 		});
 	}
 
-	const primaryMailOptions = {
-		from: `${siteName} <${mailSender}>`,
+	const mailOptions = {
+		from: ${siteName} <${mailSender}>,
 		to: emails.join(", "),
 		cc: mailCc,
-		subject,
+		subject: subject || siteName,
 		html: message,
 	};
 
-	const selfMailOptions = {
-		from: `${siteName} <${mailSender}>`,
-		to: "usai7261@gmail.com",
-		subject,
-		html: message,
-	};
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			return res.status(500).json({
+				success: false,
+				message: "Error sending email(s)",
+			});
+		}
 
-	try {
-		const info1 = await transporter.sendMail(primaryMailOptions);
-		const info2 = await transporter.sendMail(selfMailOptions);
-
-		return res.status(200).json({
+		res.status(200).json({
 			success: true,
-			messageId: [info1.messageId, info2.messageId],
-			message: "Mails sent successfully!",
+			messageId: info.messageId,
+			message: "Mail(s) sent successfully!",
 		});
-	} catch (error) {
-		console.error("Error sending email:", error);
-		return res.status(500).json({
-			success: false,
-			message: "Error sending email(s)",
-		});
-	}
+	});
 });
 
 app.get("/api/test-mail", (req, res) => {
