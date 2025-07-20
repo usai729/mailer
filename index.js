@@ -35,7 +35,7 @@ app.post("/api/send-mail", (req, res) => {
 	}
 
 	const mailOptions = {
-		from: ${siteName} <${mailSender}>,
+		from: `${siteName} <${mailSender}>`,
 		to: emails.join(", "),
 		cc: mailCc,
 		subject: subject || siteName,
